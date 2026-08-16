@@ -1,6 +1,6 @@
 ---
 title: "単価を上げるエンジニアの課題解決術"
-emoji: "📈"
+emoji: "🫰"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: ["フリーランス", "キャリア", "エンジニア"]
 published: false
