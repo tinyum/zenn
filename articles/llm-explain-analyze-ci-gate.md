@@ -67,27 +67,9 @@ LLM エージェント（tool-use ループ）
 性能レポート（Markdown）→ PR コメント + ブロッキング判定
 ```
 
-エージェントに渡すツールは `describe_table` / `run_sql` / `explain_analyze` の3つだけです。  
-接続先は、本番データを定期的に同期してマスクした DB。データ分布が本番とほぼ同じなので、実行計画も本番と同じものが得られます。
+接続先は本番相当のデータ分布を持つ DB なので、実行計画も本番と同じものが得られます（DB の詳細は次の章で）。
 
-これを GitHub Actions で PR ごとに走らせます。
-
-```yaml
-on:
-  pull_request:
-    types: [opened, ready_for_review, synchronize]
-
-jobs:
-  analyze:
-    steps:
-      # PR の diff を取得
-      # LLM エージェントで分析、レポート生成
-      - run: pnpm --filter=slow-query analyze --diff-file /tmp/pr.diff --output /tmp/report.md --blocking-file /tmp/blocking
-      # レポートを PR コメントに upsert
-      # blocking ファイルが生成されていたら CI を失敗させる
-```
-
-レポートは PR にこんなコメントとして投稿されます。
+これを GitHub Actions で PR ごとに実行し、結果を PR コメントに投稿します。こんな形です。
 
 > ## クエリ分析結果
 >
@@ -161,8 +143,6 @@ LLM のレポート上の評価は「良好」（実行時間 97ms）でした�
 
 どちらも共通しているのは、**私がレビューに入っていない**ことです。  
 CI が指摘し、PR の作者が自分で直す。以前は私が手動でやっていたレビューと EXPLAIN の検証が、完全に自動で回っています。
-
-導入後、新規クエリ起因の DB パフォーマンス障害は発生していません。
 
 ## 運用コスト
 
