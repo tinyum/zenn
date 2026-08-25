@@ -8,7 +8,7 @@ published: false
 
 ## はじめに
 
-この記事は、Findy Freelance のアンバサダープログラムの一環として投稿しています。
+この記事は、[Findy Freelance](https://freelance.findy-code.io/?fr=ambassador_tinyum&utm_source=ambassador&utm_medium=article&utm_campaign=ambassador_tinyum) からの依頼（アンバサダープログラム）を受けて投稿しています。
 
 現在参画している案件で、**PR の diff から DB クエリの変更を検出し、LLM エージェントが本番相当の DB に EXPLAIN ANALYZE を投げて性能を調査し、危険なクエリなら CI をブロックする仕組み**を作りました。
 
