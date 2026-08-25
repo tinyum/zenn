@@ -113,8 +113,8 @@ LLM は実行計画を読み解けても、「これを blocking にすべきか
 
 対策として、**判定を LLM から取り上げて、EXPLAIN の JSON をコードで機械判定する**方式に変えました。
 
-- 1万行以上をスキャンする Seq Scan → blocking
-- Index Cond のない Index Scan / Index Only Scan → blocking
+- 10万行以上をスキャンする Seq Scan → blocking
+- 10万行以上をスキャンする、Index Cond のない Index Scan / Index Only Scan → blocking
 - 実行時間3秒以上のクエリ → blocking
 
 LLM の仕事は「調査とレポート生成」に限定し、CI を落とすかどうかはコードのルールで機械的に判断する。  
