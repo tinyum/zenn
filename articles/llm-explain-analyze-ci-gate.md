@@ -3,7 +3,7 @@ title: "スロークエリはレビューじゃ見つからないので、LLMに
 emoji: "🐘"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["postgresql", "githubactions", "llm", "openai", "ci"]
-published: false
+published: true
 ---
 
 ## はじめに
