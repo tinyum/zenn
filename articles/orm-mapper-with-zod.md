@@ -8,8 +8,8 @@ published: true
 
 ## はじめに
 
-最近の ORM 批判は「AI が SQL を書けるなら、マッピング層はいらない」です。オブジェクトとリレーショナルの変換に価値がない、という話。  
-ORM と生 SQL の比較は、あえてしません。私は ORM を捨てる側ではありません。捨てずにドメインを守ろうとすると、Mapper が重い。
+最近の ORM 批判は「AI が SQL を書けるなら、マッピング層はいらない」です。オブジェクトとリレーショナルの変換に価値がない、という話です。  
+ORM と生 SQL の比較は、あえてしません。私は ORM を捨てません。ただ行をドメインの型に直そうとすると、Mapper が重いのが辛い。
 
 ```typescript
 function toUser(row: UserRow): User {
@@ -22,8 +22,8 @@ function toUser(row: UserRow): User {
 }
 ```
 
-Entity の数だけこれを書き、フィールドを足すたびに直す。  
-でも重いのは ORM のせいではなく、Mapper を手続きとして書いているからです。この記事では、Drizzle と Zod で Mapper を書かずに済ませる方法を紹介します。
+Entity の数だけこれを書き、フィールドを足すたびに直します。  
+でも重いのは ORM のせいではなく、Mapper を手で書いているからです。この記事では、Drizzle と Zod で Mapper を書かずに済ませる方法を紹介します。
 
 ## Value Object は schema を持っている
 
@@ -97,7 +97,7 @@ export async function findById(id: UserId): Promise<User | null> {
 
 Repository はクエリを書いて `fromRow` に渡すだけ。snake_case との対応は Drizzle のテーブル定義が持っているので、Mapper で気にすることはありません。余分なカラムは `z.object` が無視します。
 
-なお、テーブル定義から Zod schema を生成する [drizzle-zod](https://orm.drizzle.team/docs/zod) は使いません。あれは「テーブル → schema」で、ドメインが DB に依存する向きになります。やりたいのは逆で、ドメインが schema を持ち、DB の行はそれを満たす入力にすぎません。
+なお、テーブル定義から Zod schema を生成する [drizzle-zod](https://orm.drizzle.team/docs/zod) は使いません。あれは「テーブル → schema」で、ドメインが DB に依存する向きになります。やりたいのは逆です。ドメインが schema を持ち、DB の行はそれを満たせばよい入力です。
 
 ## 値からは分からないことも schema に書く
 
@@ -143,13 +143,13 @@ const row = await db.query.users.findFirst({
 return row ? User.fromRow(row) : null;
 ```
 
-Drizzle の relational query はネストしたオブジェクトを返すので、`z.array(Address.schema)` でそのまま受かります。テーブルの形に引きずられるのはクエリ結果までで、Entity は引きずられません。
+Drizzle の relational query はネストしたオブジェクトを返すので、`z.array(Address.schema)` でそのまま受かります。テーブルの形に引きずられるのはクエリ結果までです。Entity はテーブルと 1:1 である必要はありません。
 
 ## DB の値を再検証するのは無駄では
 
 私は必要だと思っています。DB の制約はドメインルールより弱いからです。`BLOCKED_DOMAINS` を DB は知りません。ルールを後から足したとき、古いデータが違反していると気づけるのは境界で `parse` しているからです。
 
-実際、ルールを厳しくして過去データが読めなくなることはあります。ただそれは「バックフィルが必要なデータ」が境界で見つかったということです。旧データ用の schema を `z.union` で受けて `transform` で新しい形に寄せれば、バージョンごとの分岐も schema の中で完結します。手続きの Mapper に `if` を足すより見通しがいいです。
+実際、ルールを厳しくして過去データが読めなくなることはあります。ただそれは「バックフィルが必要なデータ」が境界で見つかったということです。旧データ用の schema を `z.union` で受けて `transform` で新しい形に寄せれば、バージョンごとの分岐も schema の中で完結します。手書きの Mapper に `if` を足すより見通しがいいです。
 
 ## まとめ
 
